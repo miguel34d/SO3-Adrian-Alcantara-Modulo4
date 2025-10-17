@@ -1,0 +1,90 @@
+# ============================================
+# PRÁCTICA 1: Configuración de Apache y Hosts Virtuales
+# ============================================
+
+# Actualización e instalación
+sudo apt update 
+sudo apt install apache2 
+
+# Verificación del servicio Apache
+sudo systemctl status apache2
+
+# Creación de directorio del sitio
+cd /var/www
+sudo mkdir holamundo 
+ls
+cd holamundo
+
+# Creación de página web
+sudo nano index.html
+
+# Configuración de host virtual
+cd /etc/apache2/
+ls
+cd sites-available
+cp 000-default.conf holamundo.conf
+nano holamundo.conf 
+
+# Activación y recarga del sitio
+cd .. 
+a2ensite holamundo.conf
+systemctl reload apache2.service
+systemctl status apache2.service
+
+# Configuración de DNS local
+sudo nano /etc/hosts
+sudo nano /etc/apache2/ports.conf
+
+# Creación de segundo sitio web
+cd /var/www
+ls
+mkdir data
+ls
+cd data
+sudo nano index.html
+cat index.html 
+
+# Configuración del segundo sitio
+cd /etc/apache2/sites-available
+cp 000-default.conf data.conf
+a2ensite data.conf 
+sudo systemctl reload apache2
+sudo nano /etc/hosts
+
+# ============================================
+# PRÁCTICA 2: Configuración de Servicios de Red y Correo
+# ============================================
+
+# Verificación de configuración DNS
+cat /etc/bind/db.miguel.lan
+nslookup correo.miguel.lan
+
+# Instalación y configuración de Postfix
+sudo apt install postfix
+sudo nano /etc/postfix/main.cf
+
+# Instalación de cliente de correo
+sudo apt install msmtp 
+ls -la /home/miguel/
+
+# Configuración del cliente MSMTP
+sudo nano /home/miguel/.msmtprc
+sudo chmod 600 .msmtprc 
+
+# Envío de correo de prueba
+nano enviarcorreo.txt
+msmtp os3conadrian@gmail.com < enviarcorreo.txt
+
+# ============================================
+# PRÁCTICA 3: Configuración de Servidor de Impresión CUPS
+# ============================================
+
+# Instalación de CUPS y extensión PDF
+sudo apt install cups
+sudo apt install cups-pdf
+
+# Configuración de acceso remoto
+sudo cupsctl --remote-admin --remote-any --share-printers
+
+# Configuración del firewall
+sudo ufw allow 631/tcp
