@@ -76,85 +76,65 @@ sudo nano /etc/hosts
 # PRÁCTICA 2: Configuración de Servicios de Red y Correo
 # =========================================================
 __________________________________________________________METODOBASICO_______________________________________________
-# -------------------------------------------------
-# 1. Actualizar repositorios e instalar Postfix
-# -------------------------------------------------
+####################################################################
+#                   PRACTICA 2 – SERVIDOR DE CORREO               #
+#                INSTALACIÓN Y CONFIGURACIÓN POSTFIX              #
+####################################################################
+
+#---------------------------------------------------------------
+# 1. ACTUALIZACIÓN E INSTALACIÓN DE POSTFIX Y MAILUTILS
+#---------------------------------------------------------------
 sudo apt update
 sudo apt install postfix mailutils -y
 
 # En la pantalla azul seleccionar:
 # ✔ Internet Site
-# ✔ System mail name: 192.168.100.148
+# ✔ System mail name: 192.168.100.148  (o el hostname local)
 
-# -------------------------------------------------
-# 2. Configurar archivo main.cf de Postfix
-# -------------------------------------------------
+#---------------------------------------------------------------
+# 2. CONFIGURACIÓN DE POSTFIX PARA USAR GMAIL COMO RELAY
+#---------------------------------------------------------------
 sudo nano /etc/postfix/main.cf
+#CAMBIAR LA DIRECCION IP 127.0.0.1 por la ip de la maquina 
 
-# ------------------ CONTENIDO DEL ARCHIVO ------------------
-# appending .domain is the MUA's job.
-append_dot_mydomain = no
-
-readme_directory = no
-compatibility_level = 3.6
-
-# TLS parameters
-smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
-smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
-smtpd_tls_security_level=may
-
-smtp_tls_CApath=/etc/ssl/certs
-smtp_tls_security_level=may
-smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
-
-smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
-myhostname = practica
-alias_maps = hash:/etc/aliases
-alias_database = hash:/etc/aliases
-myorigin = /etc/mailname
-
-mydestination = $myhostname, 192.168.100.148, practica, localhost.localdomain, localhost
-
-mynetworks = 192.168.100.148/24 [::ffff:127.0.0.0]/104 [::1]/128
-mailbox_size_limit = 0
-recipient_delimiter = +
-inet_interfaces = all
-inet_protocols = all
-
-# -------- CONFIGURACIÓN PARA ENVIAR A TRAVÉS DE GMAIL --------
+# Al final del archivo agregar o verificar estas líneas:
 relayhost = [smtp.gmail.com]:587
 smtp_use_tls = yes
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
 smtp_sasl_security_options = noanonymous
 smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
-# -------------------------------------------------------------
-# ---------------- FIN DEL ARCHIVO main.cf --------------------
-# -------------------------------------------------------------
 
-# -------------------------------------------------
-# 3. Crear archivo de autenticación SASL
-# -------------------------------------------------
+# Guardar con: CTRL+O → ENTER → CTRL+X
+
+#---------------------------------------------------------------
+# 3. ARCHIVO DE AUTENTICACIÓN SASL (APP PASSWORD DE GOOGLE)
+#---------------------------------------------------------------
 sudo nano /etc/postfix/sasl_passwd
+[smtp.gmail.com]:587  TU_CORREO@gmail.com:TUPASSWORD_DE_APLICACION
 
-# -------- CONTENIDO DEL ARCHIVO ------------------
-# Reemplazar con TU correo y TU contraseña real
-[smtp.gmail.com]:587  TU_CORREO@gmail.com:TUPASSWORD
-# -------------------------------------------------
-
+#---------------------------------------------------------------
+# 4. PROTEGER ARCHIVO Y CREAR EL HASH
+#---------------------------------------------------------------
 sudo chmod 600 /etc/postfix/sasl_passwd
 sudo postmap /etc/postfix/sasl_passwd
 
-# -------------------------------------------------
-# 4. Reiniciar y habilitar Postfix
-# -------------------------------------------------
+# Esto genera /etc/postfix/sasl_passwd.db automáticamente
+
+#---------------------------------------------------------------
+# 5. REINICIAR Y HABILITAR POSTFIX
+#---------------------------------------------------------------
 sudo systemctl restart postfix
 sudo systemctl enable postfix
 
-# -------------------------------------------------
-# 5. Envío del correo de prueba (obligatorio)
-# -------------------------------------------------
-echo -e "Mi nombre es Miguel\nMi matrícula es 2024-XXXX" | mail -s "MambruSeFueALaGuerra" os3conadrian@gmail.com
+#---------------------------------------------------------------
+# 6. ENVÍO DEL CORREO DE LA PRÁCTICA
+#---------------------------------------------------------------
+# Asunto obligatorio: MambruSeFueALaGuerra
+# Cuerpo: nombre + matrícula
+
+echo -e "Mi nombre es Miguel\nMi matrícula es 2024-XXXX" | mail -s "MambruSeFueALaGuerra" miguelramirezmeli21@gmail.com
+
 
 __________________________________________________________DOMINIO____________________________________________________
 # Verificación de configuración DNS
@@ -191,4 +171,5 @@ sudo cupsctl --remote-admin --remote-any --share-printers
 # Configuración del firewall
 
 sudo ufw allow 631/tcp
+
 
