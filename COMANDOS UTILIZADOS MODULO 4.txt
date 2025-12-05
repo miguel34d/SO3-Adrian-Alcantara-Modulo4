@@ -26,6 +26,25 @@ ls
 cd sites-available
 cp 000-default.conf holamundo.conf
 nano holamundo.conf 
+--------------------------------------HOLAMUNDO.CONF--------------------------------
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName holamundo.com
+    ServerAlias www.holamundo.com
+
+    DocumentRoot /var/www/holamundo
+
+    <Directory /var/www/holamundo>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/holamundo_error.log
+    CustomLog ${APACHE_LOG_DIR}/holamundo_access.log combined
+</VirtualHost>
+-------------------------------------------------------------------------------
+#DESABILITAR SITIO 
+sudo a2dissite nombre_del_sitio.conf
 
 # Activación y recarga del sitio
 cd .. 
@@ -53,9 +72,9 @@ a2ensite data.conf
 sudo systemctl reload apache2
 sudo nano /etc/hosts
 
-# ============================================
+# =========================================================
 # PRÁCTICA 2: Configuración de Servicios de Red y Correo
-# ============================================
+# =========================================================
 
 # Verificación de configuración DNS
 cat /etc/bind/db.miguel.lan
@@ -91,3 +110,4 @@ sudo cupsctl --remote-admin --remote-any --share-printers
 # Configuración del firewall
 
 sudo ufw allow 631/tcp
+
