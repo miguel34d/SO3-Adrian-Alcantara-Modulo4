@@ -17,6 +17,8 @@ cd holamundo
 
 # Creación de página web
 sudo nano index.html
+<p>Primera línea</p>
+<p>Segunda línea</p>
 
 # Configuración de host virtual
 cd /etc/apache2/
@@ -87,4 +89,5 @@ sudo apt install cups-pdf
 sudo cupsctl --remote-admin --remote-any --share-printers
 
 # Configuración del firewall
+
 sudo ufw allow 631/tcp
